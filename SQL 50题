@@ -1,0 +1,342 @@
+# 1. 查询" 01 "课程比" 02 "课程成绩高的学生的信息及课程分数
+
+select c.*,a.score01,b.score02
+from student c JOIN 
+(SELECT SId,score as score01 from sc WHERE CId='01') a 
+on c.SId =a.SId
+left join 
+(SELECT SId,score as score02 from sc WHERE CId='02' ) b 
+on a.SId =b.SId
+WHERE a.SId=b.SId and a.score01>b.score02 
+
+# 1.1 查询同时存在" 01 "课程和" 02 "课程的情况
+SELECT * from 
+(SELECT * from sc WHERE sc.CId ='01')as a
+join 
+(SELECT * FROM sc WHERE sc.CId='02')as b
+on a.SId=b.SId 
+
+
+# 1.2 查询存在" 01 "课程但可能不存在" 02 "课程的情况(不存在时显示为 null )
+SELECT sc.* from 
+(SELECT * from (SELECT SId from sc where sc.CId='01') t1
+where t1.SId not in (select SId from sc where sc.CId='02')) t2 left join sc on t2.SId=sc.SId
+
+
+# 1.3 查询不存在" 01 "课程但存在" 02 "课程的情况
+
+SELECT * from sc where sc.SId not in (select SId from sc where sc.CId='01') and sc.CId='02'
+
+# 2 查询平均成绩大于等于 60 分的同学的学生编号和学生姓名和平均成绩
+SELECT a.SId,b.Sname,a.avg_score from (
+select SId,ROUND(AVG(sc.score),2) as avg_score from sc GROUP BY SId) a left join student b on a.SId = b.SId WHERE a.avg_score >60
+
+
+# 3 查询在 SC 表存在成绩的学生信息
+SELECT a.* from student a right join (
+SElect distinct SId from sc ) c
+on a.SId = c.SId
+
+
+# 4 查询所有同学的学生编号、学生姓名、选课总数、所有课程的成绩总和
+
+SELECT * from (
+
+SELECT DISTINCT SId,Sname from student ) a 
+left join 
+(select DISTINCT SId,count(DISTINCT CId) as sum_crouse,round(sum(score),0) as sum_score from sc GROUP BY SId) b on 
+a.SId =b.SId
+
+# 4.1 查有成绩的学生信息
+
+
+SELECT student.* from 
+(SELECT DISTINCT SId from sc) a join student on a.SId=student.SId
+
+
+
+# 5 查询「李」姓老师的数量
+
+SELECT COUNT(DISTINCT TId) from teacher where Tname like '李%'
+
+
+# 6 查询学过「张三」老师授课的同学的信息
+SELECT student.* from student where student.SId IN (
+SELECT SId from sc where  sc.CId =( SELECT CId from course left join teacher on course.TId=teacher.TId where teacher.Tname='张三'))
+
+# 7 查询没有学全所有课程的同学的信息# 
+
+SELECT student.* from student where student.SId in(
+SELECT SId from sc GROUP BY SId having COUNT(CId) != (SELECT count(CId) from course))
+
+# 8 查询至少有一门课与学号为" 01 "的同学所学相同的同学的信息
+SELECT student.* from student where student.SId in (
+SELECT DISTINCT SId from sc where sc.CId in (SELECT CId from sc where SId='01') and SId != '01')
+
+# 9 查询和" 01 "号的同学学习的课程完全相同的其他同学的信息
+
+SELECT student.* from student where student.SId in (
+SELECT SId from sc GROUP BY SId HAVING GROUP_CONCAT(CId ORDER BY CId)=(
+SELECT GROUP_CONCAT(CId ORDER BY CId) from sc where sc.SId ='01'
+) and student.SId !=0)
+
+# 10.查询没学过"张三"老师讲授的任一门课程的学生姓名
+# 先筛选出张三老师讲过的课的 cid     sid 为组，然后看这些组里面有哪个是没在 cid  里面的。 
+SELECT Sname from student where student.SId not in (
+select SId from sc WHERE CId = (
+SELECT a.CId from course a LEFT JOIN teacher b on a.TId=b.TId  WHERE b.Tname='张三'))
+
+
+# 11.查询两门及其以上不及格课程的同学的学号，姓名及其平均成绩 
+SELECT b.SId,a.Sname,b.avg_score from student a right JOIN(
+select SId,avg(score) as avg_score from sc where SId in (
+SELECT SId from sc where score<60 GROUP BY SId HAVING COUNT(score)>=2 ) GROUP BY SId) b
+on a.SId =b.SId
+
+
+# 12 检索" 01 "课程分数小于 60，按分数降序排列的学生信息
+SELECT student.*,b.score from student join (
+SELECT SId,score from sc where CId ='01' and score < 60 ORDER BY score) b on student.SId=b.SId 
+ORDER BY b.score desc
+ 
+# 13 按平均成绩从高到低显示所有学生的所有课程的成绩以及平均成绩
+
+
+SELECT sc.* , b.avg_score from sc left join (
+SELECT SId,avg(score) as avg_score from sc GROUP BY SId 
+) b
+on sc.SId = b.SId
+ORDER BY b.avg_score desc,sc.score desc
+
+# 14 查询各科成绩最高分、最低分和平均分：以如下形式显示：课程 ID，课程 name，最高分，最低分，平均分，及格率，中等率，优良率，优秀率
+
+#及格为>=60，中等为：70-80，优良为：80-90，优秀为：>=90
+
+#要求输出课程号和选修人数，查询结果按人数降序排列，若人数相同，按课程号升序排列
+
+
+SELECT CId,MAX(score) max,MIN(score) min ,AVG(score) avg_acore,count(*) as num,sum(case when sc.score >=60 then 1 else 0 end )/count(*)*100 as 及格率,
+sum(case when sc.score>=70 and sc.score<80 then 1 else 0 end )/COUNT(*)*100 as 中等率,
+sum(case when sc.score>=80 and sc.score<90 then 1 else 0 end )/count(*)*100 as 优良率,
+sum(case when sc.score>=90 then 1 else 0 end )/COUNT(*)*100 as  优秀率
+
+from sc GROUP BY CId
+ORDER BY num desc,CId ASC 
+
+
+
+
+# 15 按各科成绩进行排序，并显示排名， Score 重复时保留名次空缺
+SELECT a.*,b.Cname from (
+SELECT CId,rank()over(PARTITION by CId order by score desc) as 名次,score  from sc )a left join course b on a.CId=b.CId
+
+# 16 查询学生的总成绩，并进行排名，总分重复时不保留名次空缺
+
+SELECT a.SId,DENSE_RANK() over (ORDER BY a.sum_score desc),sum_score from(
+SELECT SId,sum(score) as sum_score from sc GROUP BY SId) a
+
+# 17 统计各科成绩各分数段人数：课程编号，课程名称，[100-85]，[85-70]，[70-60]，[60-0] 及所占百分比
+
+select a.*,b.70_85,b.百分比,c.60_70,c.百分比,d.U60,d.百分比 from 
+
+(SELECT CId,sum(case when score>85 and score<=100 then 1 else 0 end) as 85_100,ROUND((sum(case when score>85 and score<=100 then 1 else 0 end)/count(*))*100,2) as 百分比 from sc GROUP BY CId) a
+left join 
+(SELECT CId,sum(case when score>70 and score<=85 then 1 else 0 end) as 70_85,ROUND((sum(case when score>70 and score<=85 then 1 else 0 end)/count(*))*100,2) as 百分比 from sc GROUP BY CId) b on a.CId=b.CId
+LEFT JOIN
+(SELECT CId,sum(case when score>60 and score<=70 then 1 else 0 end) as 60_70,ROUND((sum(case when score>60 and score<=70 then 1 else 0 end)/count(*))*100,2) as 百分比 from sc GROUP BY CId) c on a.CId=c.CId
+left join 
+(SELECT CId,sum(case when  score<=60 then 1 else 0 end) as U60,ROUND((sum(case when score<=60 then 1 else 0 end)/count(*))*100,2) as 百分比 from sc GROUP BY CId) d on a.CId=d.CId
+
+
+# 18  查询各科成绩前三名的记录
+#  当直接使用窗口函数的排序结果，作为限制条件时，是无法使用的，因为设计到了SQL语句的执行顺序问题，where时 还没有进行窗口函数，SQL的执行顺序， from   join  where  GROUP BY having  SELECT  ORDER BY LIMIT 所以在外面再嵌套一层，这样就可以使用了， 使用的时候要加上括号
+SELECT a.* from (
+SELECT SId,CId,RANK() over(PARTITION by CId ORDER BY score desc) as row_index from sc )a  WHERE (a.row_index <=3)
+
+
+# 19 查询每门课程被选修的学生数
+
+SELECT CId,count(SId) as stu_num
+from sc  GROUP BY CId
+
+# 20 查询出只选修两门课程的学生学号和姓名
+SELECT a.*,b.sname from (
+SELECT SId from sc GROUP BY SId HAVING count(CId)=2) a left join student b on a.SId=b.SId 
+
+# 21 查询男生、女生人数
+
+select Ssex,count(Ssex) from student GROUP BY Ssex
+
+
+# 22 查询名字中含有「风」字的学生信息
+
+
+SELECT * from student WHERE Sname like '%风%'
+
+
+# 23 查询同名学生名单，并统计同名人数
+
+SELECT Sname,COUNT(Sname) as num from student GROUP BY Sname HAVING num >=2
+
+
+# 24 查询 1990 年出生的学生名单
+
+SELECT * from student WHERE Sage like '1990%'
+
+SELECT * from student WHERE YEAR(Sage)=1990
+
+
+# 25 查询每门课程的平均成绩，结果按平均成绩降序排列，平均成绩相同时，按课程编号升序排列
+
+SELECT CId,round(AVG(score),2) as avg_score from sc  GROUP BY CId ORDER BY avg_score DESC,CId
+
+# 26 查询平均成绩大于等于 85 的所有学生的学号、姓名和平均成绩
+SELECT a.SId,b.Sname,round(a.avg_score,2) from (
+SELECT SId ,AVG(score) as avg_score from sc GROUP BY SId HAVING AVG(score) >=85) a LEFT JOIN student b on a.SId=b.SId 
+
+
+# 27 查询课程名称为「数学」，且分数低于 60 的学生姓名和分数
+
+SELECT s.Sname,sc.score,c.Cname,sc.CId
+
+from sc LEFT JOIN course c on sc.CId=c.CId left join student s on sc.SId=s.SId WHERE c.Cname ='数学' and sc.score<60
+
+
+# 28 查询所有学生的课程及分数情况（存在学生没成绩，没选课的情况）
+
+SELECT s.SId,s.Sname,sc.CId,sc.score from student s LEFT JOIN sc on s.SId =sc.SId
+
+# 29 查询任何一门课程成绩在 70 分以上的姓名、课程名称和分数
+
+SELECT student.Sname,course.Cname,sc.score
+
+from 	sc LEFT JOIN course on sc.CId=course.CId LEFT JOIN student on sc.SId=student.SId 
+WHERE sc.score>70
+
+
+SELECT student.Sname,course.Cname,sc.score from sc,course,student 
+WHERE sc.score>70 and course.CId=sc.CId and student.SId=sc.SId
+
+# 30.查询存在不及格的课程
+
+
+SELECT DISTINCT sc.CId,course.Cname
+from sc LEFT JOIN course on sc.CId=course.CId WHERE score <60
+
+# 31.查询课程编号为 01 且课程成绩在 80 分及以上的学生的学号和姓名
+SELECT sc.SId,student.Sname 
+from sc left join student on sc.SId= student.SId WHERE sc.CId = '01' and sc.score >=80
+
+
+# 32 求每门课程的学生人数
+
+
+SELECT CId,COUNT(*) as num  from sc  GROUP BY CId
+
+# 33 成绩不重复，查询选修「张三」老师所授课程的学生中，成绩最高的学生信息及其成绩
+
+SELECT student.*,sc.score
+
+from teacher,course,student,sc 
+WHERE teacher.Tname='张三'
+and teacher.TId=course.TId
+and course.CId=sc.CId
+and student.SId=sc.SId
+ORDER BY sc.score desc
+LIMIT 1
+# 也可以使用窗口函数
+SELECT d.* from (
+SELECT student.*,sc.score, RANK()over(ORDER BY sc.score desc ) as rank_num
+from teacher,course,student,sc 
+WHERE teacher.Tname='张三'
+and teacher.TId=course.TId
+and course.CId=sc.CId
+and student.SId=sc.SId
+) d
+where d.rank_num =1
+
+# 34 成绩有重复的情况下，查询选修「张三」老师所授课程的学生中，成绩最高的学生信息及其成绩
+
+UPDATE sc SET score=90
+where sid = "07"
+and cid ="02";
+
+# 这个时候使用窗口函数的优势就展现了出来，想要取第几名就取第几名 
+
+# rank() 同名词，跳过
+# dense_rank() 同名词，不跳过
+# row_number ()  就是按行排列  同分不同名
+SELECT d.* from (
+SELECT student.*,sc.score, RANK()over(ORDER BY sc.score desc ) as rank_num
+from teacher,course,student,sc 
+WHERE teacher.Tname='张三'
+and teacher.TId=course.TId
+and course.CId=sc.CId
+and student.SId=sc.SId
+) d
+where d.rank_num =1
+
+
+# 35 查询不同课程成绩相同的学生的学生编号、课程编号、学生成绩
+
+
+
+SELECT c.*,sc.* from sc left join (
+SELECT SId,CId,score from sc) c on sc.SId=c.SId
+WHERE sc.CId!= c.CId and sc.score = c.score
+
+# 36 查询每门功成绩最好的前两名
+SELECT * from (
+SELECT SId,CId,RANK() over (PARTITION by CId ORDER BY score desc ) as rank_num
+from sc ) c 
+WHERE c.rank_num<=2
+
+
+# 37 统计每门课程的学生选修人数（超过 5 人的课程才统计）
+
+SELECT CId,COUNT(*) as stu_num from sc GROUP BY CId  HAVING stu_num >5
+
+
+# 38 检索至少选修两门课程的学生学号
+SELECT SId,count(CId)
+from sc GROUP BY SId HAVING count(*)>=2
+
+# 39 查询选修了全部课程的学生信息
+SELECT b.* from (
+SELECT SId from sc  GROUP BY SId HAVING GROUP_CONCAT(CId ORDER BY CId )=(
+SELECT GROUP_CONCAT(CId ORDER BY CId) from course)) a left join student b on a.SId =b.SId
+
+# 40.查询各学生的年龄，只按年份来算
+
+
+SELECT Sname,(2022-YEAR(Sage)) as age from student 
+
+# 41 按照出生日期来算，当前月日 < 出生年月的月日则，年龄减一
+
+
+SELECT Sname,SId,TIMESTAMPDIFF(YEAR,Sage,CURDATE()) as age from student
+
+# 42.查询本周过生日的学生
+SELECT * 
+from student 
+WHERE WEEKOFYEAR(Sage)=WEEKOFYEAR(CURDATE())
+
+
+
+# 43 查询下周过生日的学生
+
+SELECT * 
+from student 
+WHERE WEEKOFYEAR(Sage)=WEEKOFYEAR(CURDATE())+1
+
+# 44.查询本月过生日的学生
+SELECT * 
+from student 
+WHERE month(Sage)=month(CURDATE())
+
+# 45.查询下个月过生日的学生
+SELECT * 
+from student 
+WHERE month(Sage)=month(CURDATE())+4
+
+

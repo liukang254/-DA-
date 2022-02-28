@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 # In[3]:
 
 
-data = pd.read_csv("D:/数据分析/10周学会数据分析/材料/7数据可视化/第三周代码及数据/用户基本信息.csv")
+data = pd.read_csv("用户基本信息.csv")
 
 data.head()
 
@@ -40,7 +40,7 @@ data.shape
 chunksize=10000
 
 
-user_info_chunk = pd.read_csv("D:/数据分析/10周学会数据分析/材料/7数据可视化/第三周代码及数据/用户基本信息.csv",chunksize=chunksize)
+user_info_chunk = pd.read_csv("用户基本信息.csv",chunksize=chunksize)
 
 user_info = pd.DataFrame()
 

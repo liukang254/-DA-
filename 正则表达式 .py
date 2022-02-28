@@ -321,7 +321,7 @@ import matplotlib.pyplot as plt
 # In[85]:
 
 
-data = pd.read_csv("D:/数据分析/10周学会数据分析/材料/9使用正则进行数据的复杂筛选/使用正则进行数据的复杂筛选/旅游.csv")
+data = pd.read_csv("旅游.csv")
 data.head()
 
 
@@ -351,7 +351,7 @@ data.head()
 # In[97]:
 
 
-zufang = pd.read_csv("D:/数据分析/10周学会数据分析/材料/9使用正则进行数据的复杂筛选/使用正则进行数据的复杂筛选/租房.csv")
+zufang = pd.read_csv("D租房.csv")
 zufang.head()
 
 
@@ -398,7 +398,7 @@ f(1)
 # In[115]:
 
 
-pinglun = pd.read_csv("D:/数据分析/10周学会数据分析/材料/9使用正则进行数据的复杂筛选/使用正则进行数据的复杂筛选/评论.csv")
+pinglun = pd.read_csv("评论.csv")
 
 pinglun.head()
 

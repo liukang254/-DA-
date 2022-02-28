@@ -10,7 +10,7 @@
 
 #引用pandas库     使用read_csv 文件路径 读取文件
 import pandas as pd    
-TargetData = pd.read_csv('D:\\深度之眼\\02-数据集&代码\\工具课数据集及代码\\工具课数据集及代码\\13\\iris.csv')
+TargetData = pd.read_csv('iris.csv')
 
 #读取文件后，根据之前的经验，我们删除不用的数据，或这是说特征不明显的数据。
 # 用列表表示想要删除的列，【“字段名1”，“字段名2”】 axis  =1  表示删除的是列，  =0 表示删除的是行

@@ -13,7 +13,7 @@
 
 import pandas as pd
 
-TargetData = pd.read_csv('D:\\深度之眼\\02-数据集&代码\\工具课数据集及代码\\工具课数据集及代码\\11\\iris.csv')
+TargetData = pd.read_csv('iris.csv')
 TargetData.head()
 
 

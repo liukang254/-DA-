@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 # In[5]:
 
 
-data= pd.read_excel("D:/数据分析/10周学会数据分析/材料/7数据可视化/第三周代码及数据/折线图.xlsx")
+data= pd.read_excel("折线图.xlsx")
 data.head()
 
 
@@ -91,7 +91,7 @@ plt.show()
 
 
 #柱状图
-data = pd.read_excel("D:/数据分析/10周学会数据分析/材料/7数据可视化/第三周代码及数据/长尾分布.xlsx")
+data = pd.read_excel("长尾分布.xlsx")
 data.head()
 
 
@@ -161,7 +161,7 @@ plt.show()
 
 # 饼图
 
-data = pd.read_excel("D:/数据分析/10周学会数据分析/材料/7数据可视化/第三周代码及数据/折线图.xlsx")
+data = pd.read_excel("折线图.xlsx")
 
 data.head()
 
@@ -212,7 +212,7 @@ plt.show()
 
 
 # 散点图
-data = pd.read_excel("D:/数据分析/10周学会数据分析/材料/7数据可视化/第三周代码及数据/气泡图.xlsx")
+data = pd.read_excel("气泡图.xlsx")
 data.head()
 
 
@@ -299,7 +299,7 @@ plt.show()
 
 
 #直方图
-data = pd.read_excel("D:/数据分析/10周学会数据分析/材料/7数据可视化/第三周代码及数据/直方图.xlsx")
+data = pd.read_excel("直方图.xlsx")
 data.head()
 
 
@@ -346,7 +346,7 @@ plt.show()
 
 
 # 箱型图
-data = pd.read_excel("D:/数据分析/10周学会数据分析/材料/7数据可视化/第三周代码及数据/长尾分布.xlsx")
+data = pd.read_excel("长尾分布.xlsx")
 data.head()
 
 
@@ -458,7 +458,7 @@ plt.show()
 # In[65]:
 
 
-data = pd.read_csv("D:/数据分析/10周学会数据分析/材料/7数据可视化/第三周代码及数据/特斯拉股票.csv")
+data = pd.read_csv("特斯拉股票.csv")
 data.head()
 
 

@@ -6,7 +6,7 @@
 
 import numpy as np  
 import pandas as pd
-data = pd.read_excel('D:/数据分析/10周学会数据分析/材料/5数据的科学运算/第二周技术课代码及数据文件/data_excel.xlsx')
+data = pd.read_excel('data_excel.xlsx')
 #
 
 

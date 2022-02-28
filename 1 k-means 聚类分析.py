@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 from sklearn.cluster  import KMeans
 import matplotlib.pyplot as plt
-data=pd.read_csv('D:\\深度之眼\\02-数据集&代码\\工具课数据集及代码\\工具课数据集及代码\\11\\iris.csv')
+data=pd.read_csv('iris.csv')
 
 
 # In[8]:
@@ -48,15 +48,9 @@ get_ipython().run_line_magic('pinfo', 'KMeans')
 #)
 
 
-# 
-
-# In[14]:
 
 
 
-
-
-# In[ ]:
 
 
 

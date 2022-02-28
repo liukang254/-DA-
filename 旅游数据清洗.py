@@ -33,7 +33,7 @@
 # 请导入NumPy 和Pandas 并且把data2.csv的数据读取出来，并设置第0列为索引
 import numpy as np
 import pandas as pd 
-data= pd.read_csv("D:/数据分析/10周学会数据分析/材料/5数据的科学运算/第二周技术课代码及数据文件/data2.csv",index_col=0)
+data= pd.read_csv("data2.csv",index_col=0)
 data.head()
 
 

@@ -194,7 +194,7 @@ d1+d2
 
 
 #补充知识：pandas 如何读取大数据量文件
-data1=pd.read_csv("D:/数据分析/10周学会数据分析/材料/5数据的科学运算/第二周技术课代码及数据文件/executive.csv",nrows=5)
+data1=pd.read_csv("executive.csv",nrows=5)
 #与head的区别是使用head()是只显示前几行，使用nrows 是只读取前几行。d
 data1
 
@@ -202,7 +202,7 @@ data1
 # In[49]:
 
 
-data2 = pd.read_csv("D:/数据分析/10周学会数据分析/材料/5数据的科学运算/第二周技术课代码及数据文件/executive.csv",chunksize=100)
+data2 = pd.read_csv("executive.csv",chunksize=100)
 data2
 
 
